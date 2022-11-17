@@ -10,6 +10,7 @@ import pyEPR as epr
 from pyEPR.calcs import Convert
 from datetime import datetime
 from LC_JJ import *
+from tqdm import tqdm
 
 
 def launch_Metal_GUI():
@@ -195,7 +196,7 @@ if __name__ == "__main__":
     cross_widths = np.arange(10,51,10)
     cross_gaps = np.arange(10,51,10)
 
-    for cross_length in cross_lengths:
+    for cross_length in tqdm(cross_lengths):
         for cross_gap in cross_gaps:
             for cross_width in cross_widths:
                 run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
