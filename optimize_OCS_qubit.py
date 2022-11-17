@@ -9,6 +9,7 @@ from qiskit_metal.analyses.quantization import EPRanalysis
 import pyEPR as epr
 from pyEPR.calcs import Convert
 from datetime import datetime
+from LC_JJ import *
 
 
 def launch_Metal_GUI():
@@ -89,6 +90,9 @@ def get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num=10):
     alpha = -df["0"]["chi_O1"].values[0][0]
     print(f"Anharmonicity is {alpha} MHz")
 
+    w03 = 3*(qubit_freq) + 2*alpha*1e3
+    print(f"w_03 is {w03} GHz")
+
     E_c = -alpha
     print(f"E_c is {E_c} MHz")
 
@@ -97,13 +101,25 @@ def get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num=10):
     print(f"E_j is {E_j} GHz")
 
     ratio = E_j / E_c*1e3
+    print(f"E_j / E_c = {ratio}")
 
     return qubit_freq, ratio, alpha
 
 
 def keep_record(data, fname):
-    df = pd.DataFrame(data)
+    df = pd.DataFrame([data])
     df.to_csv(fname)
+
+
+def run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap):
+    qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj)
+    w03 = 3*(qubit_freq) + 2*alpha*1e3
+    data = {"cross_length": cross_length, "cross_width": cross_width, "cross_gap": cross_gap,
+            "Lj": Lj, "Cj": Cj, "qubit_freq": qubit_freq, "ratio": ratio, "alpha": alpha, "w03": w03}
+    fname = "data/simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d-%H-%M-%S''))
+    keep_record(data, fname)
+    print(f"\n\n{fname} has been created.\n\n")
+    print(30*"=")
 
 
 if __name__ == "__main__":
@@ -113,8 +129,9 @@ if __name__ == "__main__":
     design.overwrite_enabled = True
 
     cross_length, cross_width, cross_gap = 225, 30, 30 #um
+    target_qubit_frequency = 3 #GHz
     Lj = 10 #nH
-    Cj = 4.02 #fF
+    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
     q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
@@ -123,9 +140,12 @@ if __name__ == "__main__":
     hfss.start()
     hfss.activate_ansys_design("ocs_optimize", 'eigenmode')  # use new_ansys_design() to force creation of a blank design
 
-    cross_lengths = [150, 275]
-    cross_widths = [30, 50]
-    cross_gaps = [10, 40]
+    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap)
+
+                                                                           """
+    cross_lengths = np.arange()
+    cross_widths = np.arange()
+    cross_gaps = np.arange()
 
     for cross_length in cross_lengths:
         for cross_gap in cross_gaps:
@@ -133,11 +153,17 @@ if __name__ == "__main__":
 
                 q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
+                print(30*"=")
                 qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj)
-
-                data = [cross_length, cross_width, cross_gap, Lj, Cj, qubit_freq, ratio, alpha]
-                fname = "simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d'))
+                w03 = 3*(qubit_freq) + 2*alpha*1e3
+                data = {"cross_length": cross_length, "cross_width": cross_width, "cross_gap": cross_gap,
+                        "Lj": Lj, "Cj": Cj, "qubit_freq": qubit_freq, "ratio": ratio, "alpha": alpha, "w03": w03}
+                fname = "data/simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d-%H-%M-%S''))
                 keep_record(data, fname)
+                print(f"\n\n{fname} has been created.\n\n")
+                print(30*"=")
+
+                                                                           """
 
 
 
