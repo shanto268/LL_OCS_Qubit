@@ -116,7 +116,9 @@ def run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap):
     w03 = 3*(qubit_freq) + 2*alpha*1e3
     data = {"cross_length": cross_length, "cross_width": cross_width, "cross_gap": cross_gap,
             "Lj": Lj, "Cj": Cj, "qubit_freq": qubit_freq, "ratio": ratio, "alpha": alpha, "w03": w03}
-    fname = "data/simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d-%H-%M-%S''))
+
+    fname = "data/simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d-%H-%M-%S'))
+
     keep_record(data, fname)
     print(f"\n\n{fname} has been created.\n\n")
     print(30*"=")
