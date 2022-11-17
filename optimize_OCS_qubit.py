@@ -124,11 +124,31 @@ def run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, p
     print(30*"=")
 
 
-def sweep_Lj(Lj_range, hfss, eig_qb, cross_length, cross_width, cross_gap, pass_num,target_qubit_frequency=3, sim_offset=1.47):
+def sweep_Lj(Lj_range, hfss, eig_qb, cross_length, cross_width, cross_gap, pass_num=10, target_qubit_frequency=3, sim_offset=1.47):
     target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
     for Lj in Lj_range:
         Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
         run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+
+def sweep_cross_length(p_range, hfss, eig_qb, Lj, cross_width, cross_gap, pass_num=10,target_qubit_frequency=3, sim_offset=1.47):
+    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
+    for cross_length in p_range:
+        Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+        run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+
+def sweep_cross_width(p_range, hfss, eig_qb, Lj, cross_length, cross_gap, pass_num,target_qubit_frequency=3, sim_offset=1.47):
+    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
+    for cross_length in p_range:
+        Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+        run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+
+def sweep_cross_gap(p_range, hfss, eig_qb, Lj, cross_length, cross_width, pass_num=10,target_qubit_frequency=3, sim_offset=1.47):
+    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
+    for cross_length in p_range:
+        Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+        run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+
+
 
 
 if __name__ == "__main__":
@@ -147,9 +167,11 @@ if __name__ == "__main__":
     hfss.start()
     hfss.activate_ansys_design("ocs_optimize", 'eigenmode')  # use new_ansys_design() to force creation of a blank design
 
+    """
     # L_j sweep
     Lj_range = np.arange(10,101,10)
     sweep_Lj(Lj_range, hfss, eig_qb, cross_length, cross_width, cross_gap, pass_num,target_qubit_frequency=3, sim_offset=1.47)
+    """
 
     """
     # Sim Once
@@ -161,29 +183,21 @@ if __name__ == "__main__":
     run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
     """
 
-    """
     # 3 D sweep
-    cross_lengths = np.arange()
-    cross_widths = np.arange()
-    cross_gaps = np.arange()
+
+    target_qubit_frequency = 3 #GHz
+    sim_offset = 1.47 #GHz
+    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
+    Lj = 20 #(nH) from Lj Sweep
+    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+
+    cross_lengths = np.arange(100,221,25)
+    cross_widths = np.arange(10,51,10)
+    cross_gaps = np.arange(10,51,10)
 
     for cross_length in cross_lengths:
         for cross_gap in cross_gaps:
             for cross_width in cross_widths:
-
-                q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
-
-                print(30*"=")
-                qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num)
-                w03 = 3*(qubit_freq) + 2*alpha*1e3
-                data = {"cross_length": cross_length, "cross_width": cross_width, "cross_gap": cross_gap,
-                        "Lj": Lj, "Cj": Cj, "qubit_freq": qubit_freq, "ratio": ratio, "alpha": alpha, "w03": w03}
-                fname = "data/simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d-%H-%M-%S''))
-                keep_record(data, fname)
-                print(f"\n\n{fname} has been created.\n\n")
-                print(30*"=")
-
-    """
-
+                run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
 
 
