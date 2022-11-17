@@ -158,7 +158,7 @@ if __name__ == "__main__":
     #Allow running the same cell here multiple times to overwrite changes
     design.overwrite_enabled = True
 
-    cross_length, cross_width, cross_gap = 225, 30, 30 #um
+    cross_length, cross_width, cross_gap = 150, 25, 40 #um
 
     q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
@@ -174,7 +174,6 @@ if __name__ == "__main__":
     sweep_Lj(Lj_range, hfss, eig_qb, cross_length, cross_width, cross_gap, pass_num,target_qubit_frequency=3, sim_offset=1.47)
     """
 
-    """
     # Sim Once
     target_qubit_frequency = 3 #GHz
     sim_offset = 1.47 #GHz
@@ -182,8 +181,8 @@ if __name__ == "__main__":
     Lj = 40 #nH
     Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
     run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
-    """
 
+    """
     # 3 D sweep
 
     target_qubit_frequency = 3 #GHz
@@ -200,5 +199,6 @@ if __name__ == "__main__":
         for cross_gap in cross_gaps:
             for cross_width in cross_widths:
                 run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+    """
 
 
