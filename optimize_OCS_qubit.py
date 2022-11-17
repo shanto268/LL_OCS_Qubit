@@ -185,7 +185,6 @@ if __name__ == "__main__":
     # 3 D sweep
 
     target_qubit_frequency = 3 #GHz
-    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
     Lj = 10.9 #(nH) from Lj Sweep
     Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
