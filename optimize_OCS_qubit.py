@@ -185,14 +185,13 @@ if __name__ == "__main__":
     # 3 D sweep
 
     target_qubit_frequency = 3 #GHz
-    sim_offset = 1.47 #GHz
     target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
-    Lj = 20 #(nH) from Lj Sweep
+    Lj = 10.9 #(nH) from Lj Sweep
     Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
-    cross_lengths = np.arange(100,226,30)
-    cross_widths = np.arange(10,61,10)
-    cross_gaps = np.arange(20,51,15)
+    cross_lengths = np.arange(100,200,25)
+    cross_widths = np.arange(5,30,5)
+    cross_gaps = np.arange(35,51,5)
 
     for cross_length in tqdm(cross_lengths):
         for cross_gap in cross_gaps:
