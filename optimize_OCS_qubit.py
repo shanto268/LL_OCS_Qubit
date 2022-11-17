@@ -190,14 +190,14 @@ if __name__ == "__main__":
     Lj = 20 #(nH) from Lj Sweep
     Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
-    cross_lengths = np.arange(100,201,50)
-    cross_widths = np.arange(10,51,10)
-    cross_gaps = np.arange(10,51,10)
+    cross_lengths = np.arange(100,226,30)
+    cross_widths = np.arange(10,61,10)
+    cross_gaps = np.arange(20,51,15)
 
     for cross_length in tqdm(cross_lengths):
-        # for cross_gap in cross_gaps:
-            # for cross_width in cross_widths:
-        q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
-        run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+        for cross_gap in cross_gaps:
+            for cross_width in cross_widths:
+                q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
+                run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
 
 
