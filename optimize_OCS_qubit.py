@@ -188,9 +188,9 @@ if __name__ == "__main__":
     Lj = 10.9 #(nH) from Lj Sweep
     Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
-    cross_lengths = np.arange(100,200,25)
-    cross_widths = np.arange(5,30,5)
-    cross_gaps = np.arange(35,51,5)
+    cross_lengths = [80,100,150]
+    cross_widths = [4,5,10,15]
+    cross_gaps = [60,50,40]
 
     for cross_length in tqdm(cross_lengths):
         for cross_gap in cross_gaps:
