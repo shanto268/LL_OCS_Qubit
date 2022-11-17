@@ -65,4 +65,17 @@ Design an OCS qubit with $\frac{E_j}{E_c} \approx 20$ for fabrication through Li
 
         - `Junction_area = JJ_length * JJ_width`
 
+---
+
+# Qubit Parameter Optimization Workflow:
+
+0) Fix $L_j$ and calculate $C_j$
+
+1) Run simulation with **Standard Candle Qubit** parameters and the fixed **$L_j , C_j$** to get $\frac{E_j}{E_c}$
+
+2) Numerically solve for neighborhoods of **Qubit spatial parameters** in stable regimes of $\frac{E_j}{E_c} \approx 20$
+
+3) Run simulations within those neighborhoods
+
+
 

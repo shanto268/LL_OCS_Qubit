@@ -90,7 +90,7 @@ def get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num=10):
     alpha = -df["0"]["chi_O1"].values[0][0]
     print(f"Anharmonicity is {alpha} MHz")
 
-    w03 = 3*(qubit_freq) + 2*alpha*1e3
+    w03 = 3*(qubit_freq) + 2*alpha*1e-3
     print(f"w_03 is {w03} GHz")
 
     E_c = -alpha
@@ -111,11 +111,11 @@ def keep_record(data, fname):
     df.to_csv(fname)
 
 
-def run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap):
-    qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj)
-    w03 = 3*(qubit_freq) + 2*alpha*1e3
-    data = {"cross_length": cross_length, "cross_width": cross_width, "cross_gap": cross_gap,
-            "Lj": Lj, "Cj": Cj, "qubit_freq": qubit_freq, "ratio": ratio, "alpha": alpha, "w03": w03}
+def run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num):
+    qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num)
+    w03 = 3*(qubit_freq) + 2*alpha*1e-3
+    data = {"cross_length (um)": cross_length, "cross_width (um)": cross_width, "cross_gap (um)": cross_gap,
+            "Lj (nH)": Lj, "Cj (fF)": Cj, "qubit_freq (GHz)": qubit_freq, "ratio": ratio, "alpha (MHz)": alpha, "w03 (GHz)": w03}
 
     fname = "data/simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d-%H-%M-%S'))
 
@@ -132,17 +132,24 @@ if __name__ == "__main__":
 
     cross_length, cross_width, cross_gap = 225, 30, 30 #um
     target_qubit_frequency = 3 #GHz
-    Lj = 10 #nH
+    Lj = 40 #nH
     Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
     q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
+    pass_num = 15
     eig_qb = EPRanalysis(design, "hfss")
     hfss = eig_qb.sim.renderer
     hfss.start()
     hfss.activate_ansys_design("ocs_optimize", 'eigenmode')  # use new_ansys_design() to force creation of a blank design
 
-    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap)
+    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+    Lj = 20 #nH
+    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+    Lj = 30 #nH
+    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
 
     """
     cross_lengths = np.arange()
@@ -156,7 +163,7 @@ if __name__ == "__main__":
                 q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
                 print(30*"=")
-                qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj)
+                qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num)
                 w03 = 3*(qubit_freq) + 2*alpha*1e3
                 data = {"cross_length": cross_length, "cross_width": cross_width, "cross_gap": cross_gap,
                         "Lj": Lj, "Cj": Cj, "qubit_freq": qubit_freq, "ratio": ratio, "alpha": alpha, "w03": w03}
