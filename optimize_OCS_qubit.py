@@ -47,6 +47,7 @@ def create_OCS_qubit(cross_length, cross_width, cross_gap):
 
 
 def get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num=10):
+    hfss.clean_active_design()
     hfss.render_design(['Q1'], [])
 
 
@@ -95,7 +96,7 @@ def get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj, pass_num=10):
     E_j = Convert.Ej_from_Lj(10, 'nH', "GHz")
     print(f"E_j is {E_j} GHz")
 
-    ratio = Ej / E_c*1e3
+    ratio = E_j / E_c*1e3
 
     return qubit_freq, ratio, alpha
 
@@ -115,17 +116,28 @@ if __name__ == "__main__":
     Lj = 10 #nH
     Cj = 4.02 #fF
 
-    q_d = create_OCS_qubit(cross_length, cross_width, cross_gap)
+    q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
     eig_qb = EPRanalysis(design, "hfss")
     hfss = eig_qb.sim.renderer
     hfss.start()
     hfss.activate_ansys_design("ocs_optimize", 'eigenmode')  # use new_ansys_design() to force creation of a blank design
-    qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj)
 
-    data = [cross_length, cross_width, cross_gap, Lj, Cj, qubit_freq, ratio, alpha]
-    fname = "simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d'))
-    keep_record(data, fname)
+    cross_lengths = [150, 275]
+    cross_widths = [30, 50]
+    cross_gaps = [10, 40]
+
+    for cross_length in cross_lengths:
+        for cross_gap in cross_gaps:
+            for cross_width in cross_widths:
+
+                q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
+
+                qubit_freq, ratio, alpha = get_all_parameters_of_interest(hfss, eig_qb, Lj, Cj)
+
+                data = [cross_length, cross_width, cross_gap, Lj, Cj, qubit_freq, ratio, alpha]
+                fname = "simulation_info_{}.csv".format(datetime.today().strftime('%Y-%m-%d'))
+                keep_record(data, fname)
 
 
 
