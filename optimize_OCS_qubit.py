@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     target_qubit_frequency = 3 #GHz
     Lj = 10.9 #(nH) from Lj Sweep
-    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+    Cj = 0 #(fF) Assumption since JJ is tiny 
 
     cross_lengths = [80,100,150]
     cross_widths = [4,5,10,15]
