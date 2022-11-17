@@ -124,6 +124,13 @@ def run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, p
     print(30*"=")
 
 
+def sweep_Lj(Lj_range, hfss, eig_qb, cross_length, cross_width, cross_gap, pass_num,target_qubit_frequency=3, sim_offset=1.47):
+    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
+    for Lj in Lj_range:
+        Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+        run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+
+
 if __name__ == "__main__":
     matplotlib.use("Agg")
     gui, design = launch_Metal_GUI()
@@ -131,9 +138,6 @@ if __name__ == "__main__":
     design.overwrite_enabled = True
 
     cross_length, cross_width, cross_gap = 225, 30, 30 #um
-    target_qubit_frequency = 3 #GHz
-    Lj = 40 #nH
-    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
 
     q_ocs = create_OCS_qubit(cross_length, cross_width, cross_gap)
 
@@ -143,15 +147,22 @@ if __name__ == "__main__":
     hfss.start()
     hfss.activate_ansys_design("ocs_optimize", 'eigenmode')  # use new_ansys_design() to force creation of a blank design
 
-    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
-    Lj = 20 #nH
-    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
-    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
-    Lj = 30 #nH
-    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
-    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+    # L_j sweep
+    Lj_range = np.arange(10,101,10)
+    sweep_Lj(Lj_range, hfss, eig_qb, cross_length, cross_width, cross_gap, pass_num,target_qubit_frequency=3, sim_offset=1.47)
 
     """
+    # Sim Once
+    target_qubit_frequency = 3 #GHz
+    sim_offset = 1.47 #GHz
+    target_qubit_frequency = target_qubit_frequency - sim_offset #GHz
+    Lj = 40 #nH
+    Cj = round(get_Cj_from_Lj(Lj, target_qubit_frequency),2) #fF
+    run_simulation(hfss, eig_qb, Lj, Cj, cross_length, cross_width, cross_gap, pass_num)
+    """
+
+    """
+    # 3 D sweep
     cross_lengths = np.arange()
     cross_widths = np.arange()
     cross_gaps = np.arange()
